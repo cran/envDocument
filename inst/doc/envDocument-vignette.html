@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Donald Jackson (donald.jackson@bms.com)" />
 
-<meta name="date" content="2017-03-10" />
+<meta name="date" content="2017-09-18" />
 
 <title>Using envDocument</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Using envDocument</h1>
 <h4 class="author"><em>Donald Jackson (<a href="mailto:donald.jackson@bms.com">donald.jackson@bms.com</a>)</em></h4>
-<h4 class="date"><em>2017-03-10</em></h4>
+<h4 class="date"><em>2017-09-18</em></h4>
 
 
 
@@ -84,16 +84,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 <p>The primary purpose is to capture information for inclusion in an analysis report. As such, the call to env_doc() should be made after all libraries are attached.</p>
 <p>Some functions, especialy <code>getScriptPath()</code> (get path to calling script) and <code>getRepo()</code> (find git repo for calling script), may be useful in other settings.</p>
+<p>Note: if the calling script is not tracked in a git repository then <code>env_doc()</code> or <code>getRepo()</code> will throw warnings. These can be disabled by setting <code>git = FALSE</code> (see examples).</p>
+<p>Version 2.3.1 adds support for Domino Datalab environment reporting. To add this, set <code>domino = TRUE</code> in the call to <code>env_doc()</code>.</p>
 <div id="examples" class="section level1">
 <h1>Examples</h1>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(envDocument) 
 <span class="kw">library</span>(knitr)
 
 
-<span class="kw">kable</span>(<span class="kw">env_doc</span>()) <span class="co"># with git2r installed</span>
-<span class="kw">kable</span>(<span class="kw">env_doc</span>(<span class="dt">git =</span> <span class="ot">FALSE</span>)) <span class="co"># without git2r</span></code></pre></div>
+<span class="kw">env_doc</span>() <span class="co"># with git2r installed</span>
+
+<span class="kw">env_doc</span>(<span class="st">&quot;table&quot;</span>) <span class="co"># pretty-print output using knitr::kable</span>
+
+<span class="kw">env_doc</span>(<span class="dt">git =</span> <span class="ot">FALSE</span>) <span class="co"># without git2r or if script is not trakced.</span>
+
+<span class="kw">env_doc</span>(<span class="dt">domino =</span> <span class="ot">TRUE</span>) <span class="co"># optional - print information on Domino Datalab environment</span></code></pre></div>
 <p>The <code>getScriptPath()</code> function looks up the name of the script being run. If called in an interactive context it will return NA. <code>get_scriptpath()</code> is provided as an alias for backwards compatibility.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">env_doc</span>(<span class="st">&quot;table&quot;</span>)</code></pre></div>
 </div>
 
 
@@ -103,7 +109,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

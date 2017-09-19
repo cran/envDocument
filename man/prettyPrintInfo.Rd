@@ -13,4 +13,3 @@ prettyPrintInfo(info_list = list())
 Uses \code{knitr::kable} to pretty-print separate tables for each
 'section' (list element) in the enviromnent information.
 }
-

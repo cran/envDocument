@@ -12,4 +12,3 @@ collapseInfo(info_list = list())
 \description{
 Collapse list of enviornment information into a single data frme
 }
-

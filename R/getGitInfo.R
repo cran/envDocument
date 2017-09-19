@@ -6,53 +6,59 @@
 #' 
 #' Requires that \code{git2r} be installed.
 #' 
-#' @param scriptpath Path to script (optional, defaults to get_scriptPath())
+#' @param scriptpath Path to script (optional, defaults to calling script from get_scriptPath())
 #' 
 #' @examples
 #' git_info <- getGitInfo()
 #' 
 #' @export
 #' 
-getGitInfo <- function(scriptpath = "") {
+getGitInfo <- function(scriptpath = NA) {
   
   # check whether git2r is installed
   if (!requireNamespace("git2r", quietly = TRUE)) {
-    stop("Package git2r needed for this function to work. Please install it or call env_doc(git = FALSE).",
+    warning("Package git2r is needed by getGitInfo. Please install it or call env_doc(git = FALSE).",
          call. = FALSE)
+    return(infoNotFound())
   }
   
-  
-  if(scriptpath == "") {
-    scriptpath <- getScriptPath()
-  }
-  
+  # look up script 
   if(is.na(scriptpath)) {
-    warning("Could not determine script path, unable to look up git information")
-    return(NULL)
+    scriptpath <- try(getScriptPath(), silent = TRUE)
+    
+    if(class(scriptpath) == "try-error") {
+      warning("Unable to look up git information; could not determine calling script\n",
+              scriptpath)
+      return(infoNotFound())
+    }
   }
   
+  scriptRepo <- try(getRepo(scriptpath), silent = TRUE)
+  
+  if(class(scriptRepo) == "try-error") {
+    warning(scriptRepo)
+    return(infoNotFound())
+  }
+  
+  # get branch name
+  branchname <- git2r::branches(scriptRepo)[[1]]@name
+  results <- data.frame( Name = "Branch",
+                         Value = branchname)
  
-  scriptRepo <- getRepo(scriptpath)
-  
-  if(class(scriptRepo) != "git_repository") {
-    # getRepo will throw the warning...
-    return(NULL)
-  }
-  
-  
-  # get last commit info
+   # get last commit info
   lastCommit <- methods::as(scriptRepo, "data.frame")[1,]
   
   # has the file been changed since last commit
   changed <- fileStatus(scriptRepo, scriptpath)
   
-  results <- data.frame( Name = c("Commit Hash", 
-                                  "Commit Time", 
-                                  "Status"),
-                         Value = c(substring(lastCommit$sha, 1, 7), 
-                                   as.character.Date(lastCommit$when), 
-                                   changed) 
-                         )
+  results <- rbind(results,
+                   data.frame( Name = c("Commit Hash", 
+                                        "Commit Time", 
+                                        "Status"),
+                               Value = c(substring(lastCommit$sha, 1, 7), 
+                                         as.character.Date(lastCommit$when), 
+                                         changed) 
+                   ))
   
   # see if commit is tagged
   tagString <- getTag(scriptRepo)
@@ -66,3 +72,5 @@ getGitInfo <- function(scriptpath = "") {
   
   return(results)
 }
+
+

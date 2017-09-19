@@ -12,4 +12,3 @@ remoteInfo(repo)
 \description{
 Look up remotes for repository
 }
-
